@@ -1,34 +1,50 @@
-import React from "react";
-import "../auth.form.scss";
-import { useNavigate,Link } from "react-router";
+import React,{useState} from 'react'
+import { useNavigate, Link } from 'react-router'
+import "../auth.form.scss"
+import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle login logic here
+    const { loading, handleLogin } = useAuth()
+    const navigate = useNavigate()
+
+    const [ email, setEmail ] = useState("")
+    const [ password, setPassword ] = useState("")
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        await handleLogin({email,password})
+        navigate('/')
     }
-  return (
-    <main>
-      <div className="form_container">
-        <h1>Welcome Back</h1>
-        <p className="subtitle">Sign in to continue to SkillGap</p>
-        <form onSubmit={handleSubmit}>
-          <div className="input_group">
-            <label htmlFor="email">Email Address</label>
-            <input type="email" id="email" placeholder="you@example.com"/>
-          </div>
-          <div className="input_group">
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password"/>
-          </div>
-          <button type="submit">Sign In</button>
-        </form>
-        <div className="auth_link">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </div>
-      </div>
-    </main>
-  );
-}   
-export default Login;
+
+    if(loading){
+        return (<main><h1>Loading.......</h1></main>)
+    }
+
+
+    return (
+        <main>
+            <div className="form-container">
+                <h1>Login</h1>
+                <form onSubmit={handleSubmit}>
+                    <div className="input-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            onChange={(e) => { setEmail(e.target.value) }}
+                            type="email" id="email" name='email' placeholder='Enter email address' />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            onChange={(e) => { setPassword(e.target.value) }}
+                            type="password" id="password" name='password' placeholder='Enter password' />
+                    </div>
+                    <button className='button primary-button' >Login</button>
+                </form>
+                <p>Don't have an account? <Link to={"/register"} >Register</Link> </p>
+            </div>
+        </main>
+    )
+}
+
+export default Login
