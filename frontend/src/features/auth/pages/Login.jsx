@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth'
@@ -8,40 +8,70 @@ const Login = () => {
     const { loading, handleLogin } = useAuth()
     const navigate = useNavigate()
 
-    const [ email, setEmail ] = useState("")
-    const [ password, setPassword ] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await handleLogin({email,password})
+        await handleLogin({ email, password })
         navigate('/')
     }
 
-    if(loading){
-        return (<main><h1>Loading.......</h1></main>)
+    if (loading) {
+        return (
+            <main className="auth-page">
+                <div className="auth-container">
+                    <div className="skeleton-auth-header" />
+                    <div className="skeleton-auth-input" />
+                    <div className="skeleton-auth-input" />
+                    <div className="skeleton-auth-button" />
+                    <div className="skeleton-auth-text" />
+                </div>
+            </main>
+        )
     }
 
-
     return (
-        <main>
-            <div className="form-container">
-                <h1>Login</h1>
-                <form onSubmit={handleSubmit}>
+        <main className="auth-page">
+            <div className="auth-container">
+                <div className="auth-header">
+                    <h1>Login</h1>
+                    <p>Access your interview preparation dashboard</p>
+                </div>
+
+                <form className="auth-form" onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">Email Address</label>
                         <input
-                            onChange={(e) => { setEmail(e.target.value) }}
-                            type="email" id="email" name='email' placeholder='Enter email address' />
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                            id="email"
+                            name='email'
+                            placeholder='you@example.com'
+                            required
+                        />
                     </div>
+
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <input
-                            onChange={(e) => { setPassword(e.target.value) }}
-                            type="password" id="password" name='password' placeholder='Enter password' />
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="password"
+                            id="password"
+                            name='password'
+                            placeholder='Enter your password'
+                            required
+                        />
                     </div>
-                    <button className='button primary-button' >Login</button>
+
+                    <button type="submit" className='button primary-button'>
+                        Login to Dashboard
+                    </button>
                 </form>
-                <p>Don't have an account? <Link to={"/register"} >Register</Link> </p>
+
+                <div className="auth-footer">
+                    <p>Don't have an account? <Link to="/register">Create one</Link></p>
+                </div>
             </div>
         </main>
     )

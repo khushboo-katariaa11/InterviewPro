@@ -1,259 +1,442 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+// ============================================================
+//  auth.form.scss — Matching App Theme
+//  Dark Navy · Hot Pink Accent · Animated & Modern
+// ============================================================
 
-// ── Variables ──────────────────────────────────────────────
-$bg:          #0a0a0f;
-$surface:     #111118;
-$border:      #1e1e2e;
-$border-hover:#2e2e4e;
-$accent:      #6c63ff;
-$accent-glow: #6c63ff66;
-$accent-light:#a89dff;
-$text:        #e8e6ff;
-$muted:       #6b6a8a;
-$error:       #ff6b8a;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-// ── Reset / Base ───────────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+// ─── Design Tokens (matching screenshot) ─────────────────────
+$bg-page:          #0f1117;
+$bg-card:          #181c27;
+$bg-input:         #1e2333;
 
-main {
+$accent-pink:      #ff2d6b;
+$accent-pink-dim:  rgba(255, 45, 107, 0.15);
+$accent-pink-glow: rgba(255, 45, 107, 0.3);
+
+$border-card:      rgba(255, 255, 255, 0.1);
+$border-input:     rgba(255, 255, 255, 0.08);
+$border-focus:     rgba(255, 45, 107, 0.6);
+
+$text-primary:     #ffffff;
+$text-secondary:   rgba(255, 255, 255, 0.55);
+$text-label:       rgba(255, 255, 255, 0.75);
+$text-placeholder: rgba(255, 255, 255, 0.28);
+
+$radius-card:      16px;
+$radius-input:     10px;
+$radius-btn:       10px;
+
+// ─── Keyframes ───────────────────────────────────────────────
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50%       { transform: translateX(-50%) translateY(-14px); }
+}
+
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes inputStagger {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes btnReady {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes iconPop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  70%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+// ─── Auth Page Layout ─────────────────────────────────────────
+
+.auth-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $bg;
-  font-family: 'DM Sans', sans-serif;
-  color: $text;
+  background-color: $bg-page;
   position: relative;
   overflow: hidden;
+  animation: fadeIn 0.3s ease both;
 
-  // Ambient background blobs
-  &::before,
-  &::after {
+  // Subtle grid overlay (matches app aesthetic)
+  &::before {
     content: '';
     position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 44px 44px;
     pointer-events: none;
     z-index: 0;
   }
-  &::before {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, #6c63ff22 0%, transparent 70%);
-    top: -120px; left: -100px;
-    animation: drift 12s ease-in-out infinite alternate;
-  }
+
+  // Ambient pink glow — floats slowly
   &::after {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, #ff63ab18 0%, transparent 70%);
-    bottom: -80px; right: -80px;
-    animation: drift 15s ease-in-out infinite alternate-reverse;
+    content: '';
+    position: fixed;
+    top: -180px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 420px;
+    background: radial-gradient(ellipse, rgba(255, 45, 107, 0.11) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 10s ease-in-out infinite;
   }
 }
 
-@keyframes drift {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(40px, 30px) scale(1.08); }
+// Decorative rotating ring (bottom-right atmosphere)
+.auth-page > .auth-ring {
+  display: none; // Opt-in via JSX if desired
 }
 
-// ── Form Container ─────────────────────────────────────────
-.form-container {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 420px;
-  margin: 1.5rem;
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: 20px;
-  padding: 2.75rem 2.5rem 2.25rem;
-  box-shadow:
-    0 0 0 1px $border,
-    0 24px 80px #00000088,
-    0 0 60px #6c63ff0d;
-  animation: slideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+// ─── Auth Container (Card) ────────────────────────────────────
 
-  // Top accent line
+.auth-container {
+  position: relative;
+  z-index: 10;
+  width: min(420px, 92vw);
+  padding: 44px 40px 36px;
+  background: $bg-card;
+  border: 1px solid $border-card;
+  border-radius: $radius-card;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 32px 72px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  // Pink top-edge accent line (matches "REQUIRED" card style)
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 10%; right: 10%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, $accent, transparent);
-    border-radius: 999px;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      $accent-pink 35%,
+      $accent-pink 65%,
+      transparent
+    );
+    border-radius: 0 0 3px 3px;
   }
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+// ─── Auth Header ─────────────────────────────────────────────
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 34px;
+  animation: fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+
+  // Animated icon badge above title
+  &::before {
+    content: '✦';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 18px;
+    border-radius: 12px;
+    background: $accent-pink-dim;
+    border: 1px solid rgba(255, 45, 107, 0.3);
+    font-size: 20px;
+    color: $accent-pink;
+    box-shadow:
+      0 0 0 8px rgba(255, 45, 107, 0.06),
+      0 4px 16px rgba(255, 45, 107, 0.12);
+    animation: iconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 400;
+    color: $text-secondary;
+    line-height: 1.55;
+  }
 }
 
-// ── Heading ────────────────────────────────────────────────
-h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: $text;
-  margin-bottom: 1.75rem;
-  line-height: 1;
+// ─── Auth Form ────────────────────────────────────────────────
 
-  // Subtle gradient on the heading text
-  background: linear-gradient(135deg, #fff 40%, $accent-light 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// ── Form ───────────────────────────────────────────────────
-form {
+.auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 18px;
 }
 
-// ── Input Group ────────────────────────────────────────────
+// ─── Input Group ─────────────────────────────────────────────
+
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 8px;
+
+  &:nth-child(1) { animation: inputStagger 0.45s ease 0.2s both; }
+  &:nth-child(2) { animation: inputStagger 0.45s ease 0.3s both; }
+  &:nth-child(3) { animation: inputStagger 0.45s ease 0.4s both; }
 
   label {
-    font-size: 0.72rem;
+    font-size: 13px;
     font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $muted;
-    transition: color 0.2s;
+    color: $text-label;
+    letter-spacing: 0.01em;
   }
 
   input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: #0d0d14;
-    border: 1px solid $border;
-    border-radius: 10px;
-    color: $text;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 300;
+    padding: 13px 16px;
+    background: $bg-input;
+    border: 1px solid $border-input;
+    border-radius: $radius-input;
+    color: $text-primary;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    -webkit-appearance: none;
+    transition:
+      border-color 0.2s ease,
+      background  0.2s ease,
+      box-shadow  0.25s ease;
 
     &::placeholder {
-      color: #3a3a55;
+      color: $text-placeholder;
     }
 
     &:hover {
-      border-color: $border-hover;
+      border-color: rgba(255, 255, 255, 0.16);
     }
 
     &:focus {
-      border-color: $accent;
-      background: #0f0f1a;
-      box-shadow: 0 0 0 3px $accent-glow, 0 0 20px $accent-glow;
-
-      // Label lights up when input is focused
-      & ~ label,
-      + label {
-        color: $accent-light;
-      }
+      border-color: $border-focus;
+      box-shadow:
+        0 0 0 3px rgba(255, 45, 107, 0.12),
+        0 0 14px rgba(255, 45, 107, 0.07);
     }
 
-    // Autofill style reset
+    // Keep autofill dark
     &:-webkit-autofill,
+    &:-webkit-autofill:hover,
     &:-webkit-autofill:focus {
-      -webkit-box-shadow: 0 0 0 1000px #0d0d14 inset;
-      -webkit-text-fill-color: $text;
-      transition: background-color 5000s;
+      -webkit-box-shadow: 0 0 0 1000px $bg-input inset !important;
+      -webkit-text-fill-color: $text-primary !important;
+      border-color: $border-input;
+      transition: background-color 9999s ease-in-out 0s;
     }
-  }
-
-  // Label color on sibling focus (input before label workaround)
-  &:focus-within label {
-    color: $accent-light;
   }
 }
 
-// ── Button ─────────────────────────────────────────────────
-.button {
-  display: inline-flex;
+// ─── Primary Button ───────────────────────────────────────────
+
+.button.primary-button {
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
-
-  &:active {
-    transform: scale(0.97);
-  }
-}
-
-.primary-button {
+  gap: 8px;
   width: 100%;
-  padding: 0.85rem 1rem;
-  margin-top: 0.4rem;
-  background: $accent;
-  color: #fff;
-  box-shadow: 0 4px 24px $accent-glow;
+  padding: 14px 20px;
+  margin-top: 6px;
+  background: $accent-pink;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: $radius-btn;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background   0.2s ease,
+    transform    0.15s ease,
+    box-shadow   0.2s ease;
+
+  animation: btnReady 0.5s ease 0.5s both;
+
+  // Shine sweep on hover
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      transparent
+    );
+    transition: left 0.5s ease;
+    pointer-events: none;
+  }
 
   &:hover {
-    background: lighten(#6c63ff, 8%);
-    box-shadow: 0 6px 32px #6c63ffaa;
+    background: darken(#ff2d6b, 5%);
     transform: translateY(-1px);
+    box-shadow:
+      0 8px 28px rgba(255, 45, 107, 0.38),
+      0 2px 8px  rgba(255, 45, 107, 0.25);
+
+    &::after {
+      left: 150%;
+    }
   }
 
   &:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 12px $accent-glow;
+    transform: translateY(0) scale(0.985);
+    box-shadow: 0 2px 10px rgba(255, 45, 107, 0.28);
+  }
+
+  // Star icon prefix (like the "Generate" button in screenshot)
+  &::before {
+    content: '★';
+    font-size: 14px;
+    line-height: 1;
   }
 }
 
-// ── Footer link ────────────────────────────────────────────
-.form-container > p {
-  margin-top: 1.5rem;
+// ─── Auth Footer ─────────────────────────────────────────────
+
+.auth-footer {
+  margin-top: 28px;
   text-align: center;
-  font-size: 0.85rem;
-  color: $muted;
+  animation: fadeIn 0.5s ease 0.6s both;
+
+  p {
+    font-size: 13px;
+    color: $text-secondary;
+  }
 
   a {
-    color: $accent-light;
-    text-decoration: none;
+    color: $accent-pink;
     font-weight: 500;
-    transition: color 0.2s;
+    text-decoration: none;
+    transition:
+      color   0.15s ease,
+      opacity 0.15s ease;
 
     &:hover {
-      color: #fff;
+      color: lighten(#ff2d6b, 14%);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
   }
 }
 
-// ── Loading state ──────────────────────────────────────────
-main > h1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.25rem;
-  color: $muted;
-  animation: pulse 1.4s ease-in-out infinite;
+// ─── Skeleton Loaders ─────────────────────────────────────────
+
+$skel-base:  rgba(255, 255, 255, 0.055);
+$skel-shine: rgba(255, 255, 255, 0.095);
+
+%skeleton {
+  background: linear-gradient(
+    90deg,
+    $skel-base  25%,
+    $skel-shine 50%,
+    $skel-base  75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 1; }
+.skeleton-auth-header {
+  @extend %skeleton;
+  height: 80px;
+  margin-bottom: 34px;
+  border-radius: 10px;
 }
 
-// ── Responsive ─────────────────────────────────────────────
+.skeleton-auth-input {
+  @extend %skeleton;
+  height: 66px;
+  margin-bottom: 18px;
+  border-radius: $radius-input;
+}
+
+.skeleton-auth-button {
+  @extend %skeleton;
+  height: 50px;
+  margin-top: 6px;
+  border-radius: $radius-btn;
+}
+
+.skeleton-auth-text {
+  @extend %skeleton;
+  height: 14px;
+  width: 58%;
+  margin: 28px auto 0;
+  border-radius: 6px;
+}
+
+// ─── Responsive ───────────────────────────────────────────────
+
 @media (max-width: 480px) {
-  .form-container {
-    padding: 2rem 1.5rem 1.75rem;
-    margin: 1rem;
-    border-radius: 16px;
+  .auth-container {
+    padding: 36px 22px 28px;
   }
 
-  h1 { font-size: 1.65rem; }
+  .auth-header h1 {
+    font-size: 22px;
+  }
 }
