@@ -4,6 +4,11 @@ An intelligent interview preparation platform powered by Google GenAI that gener
 
 ---
 
+![Alt text](ss1.png)
+![Alt text](ss2.png)
+
+
+
 ## 📋 Project Overview 
 
 ### **Situation**
